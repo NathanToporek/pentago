@@ -1,14 +1,23 @@
 #include "boardstate.h"
 
 // Private functions. Use parse_move to apply a move.
-int apply_move(GameState* gs, int block, int x, int y, char direction, int rotblock);
-int apply_rotation(GameState* gs, int block, char dir);
+void        apply_move(GameState* gs, int block, int x, int y);
+void        apply_rotation(GameState* gs, int block, char dir);
 
 // Private functions for hasanyonewonyet(). they need to be implemented.
-int checkdown(GameState* gs, int col);
-int checkup(GameState* gs, int col);
-int checkright(GameState* gs, int row);
-int checkleft(GameState* gs, int row);
+int         checkdown(GameState* gs, int col);
+int         checkup(GameState* gs, int col);
+int         checkright(GameState* gs, int row);
+int         checkleft(GameState* gs, int row);
+// Private functions to check for a diagonal win. Used by hasanyonewonyet().
+int         checktopleft(GameState* gs);
+int         checktopright(GameState* gs);
+int         checkbottomleft(GameState* gs);
+int         checkbottomright(GameState* gs);
+// Private functions used by the checking functions above.
+int         isvalidcolor(char color);
+int         hascolorwonyet(GameState* gs, char color);
+void        setwinner(GameState* gs, char color);
 
 GameState* init_GameState(void) {
 
@@ -18,10 +27,9 @@ GameState* init_GameState(void) {
         printf("Error initializing gamestate struct. Returning NULL.\n");
         return NULL;
     }
-    gs->winners[0] = '\0';
-    gs->winners[1] = '\0';
+    gs->blackWon = FALSE;
+    gs->whiteWon = FALSE;
     gs->currTurn = BLACK;
-    gs->isWon = FALSE;
     return gs;
 }
 
@@ -68,7 +76,6 @@ void print_state(GameState* gs) {
     printf("\t+-------+-------+\n\n");
 }
 // Parses the move and prepares it to be applied to the passed gamestate.
-// TODO Maybe move this to another source file? Game Controller? idk, man
 int parse_move(GameState* gs, char* move) {
     
     char *pos = strtok(move, " ");
@@ -94,16 +101,9 @@ int parse_move(GameState* gs, char* move) {
         printf("You are the reason I have to write this extra code. Stop existing, please.\n");
         return FALSE;
     }
-    
-    // ACTUALLY APPLY THE MOVE.
+    // Check if the move is valid.
     int x = (slot - 1) % (BLOCK_SIZE);
     int y = (slot - 1) / (BLOCK_SIZE);
-    
-    return apply_move(gs, block, x, y, direction, rotblock);
-}
-
-int apply_move(GameState* gs, int block, int x, int y, char direction, int rotblock) {
-    
     // Accounting for each block.
     switch (block) {
         case 2:
@@ -127,15 +127,21 @@ int apply_move(GameState* gs, int block, int x, int y, char direction, int rotbl
         printf("You did a bad. Someone already played here.\n");
         return FALSE;
     }
-    gs->state[y][x] = gs->currTurn;
-    
-    //TODO Implement hasanyonewonyet()
-    //hasanyonewonyet(gs);
-    if(!apply_rotation(gs, rotblock, direction)) {
-        return FALSE;
+    // ACTUALLY APPLY THE MOVE.    
+    apply_move(gs, block, x, y);
+    if(hasanyonewonyet(gs)) {
+        printf("We have a winner!\n");  
+        return TRUE; // Exit TRUE, if someone's won. As the game/move has completed.
     }
-    //TODO Implement hasanyonewonyet()
-    //hasanyonewonyet(gs);
+    apply_rotation(gs, rotblock, direction);
+    hasanyonewonyet(gs); // We don't need to conditionally do something here.
+                         // Just set a winner, it's the engine's job to output that shit.
+    return TRUE;
+}
+
+void apply_move(GameState* gs, int block, int x, int y) {
+    
+    gs->state[y][x] = gs->currTurn;
     
     // Update whose turn it is.
     if(gs->currTurn == BLACK) {
@@ -143,17 +149,10 @@ int apply_move(GameState* gs, int block, int x, int y, char direction, int rotbl
     } else if(gs->currTurn == WHITE) {
         gs->currTurn = BLACK;
     }
-    return TRUE;
 }
 
-int apply_rotation(GameState* gs, int block, char dir) {
+void apply_rotation(GameState* gs, int block, char dir) {
     
-    // This is a private method that gets called in a method that sanitizes its input.
-    // If you get my code to exit here, please tell me how.
-    if(gs == NULL || block > 4 || block < 1 || (dir != 'R' && dir != 'L')) {
-        printf("I shouldn't have to write this check, but people like you make this necessary. Thanks.\n");
-       return FALSE;
-    }
     char tmp[BLOCK_SIZE][BLOCK_SIZE];
     
     // Get the x and y modifier for the block
@@ -196,14 +195,10 @@ int apply_rotation(GameState* gs, int block, char dir) {
                 gs->state[y + ymod][x + xmod]= tmp[x][BLOCK_SIZE - y - 1];
             }
         }
-    } else {
-        printf("I'm beginning to think I check for errors too much.\n");
-        return FALSE;
-    }
-    return TRUE;
+    } 
 }
 
-int hasanyonewonyet(gs) {
+int hasanyonewonyet(GameState* gs) {
     // A win has to be on an edge of the board. So we only need to check there.
     int status = FALSE;
     //Check for diagonal wins here
@@ -218,116 +213,239 @@ int hasanyonewonyet(gs) {
                || checkup(gs, num) 
                || checkleft(gs, num) 
                || checkright(gs, num);
-    }        
+    }
     return status;
 }
-
 int checkdown(GameState* gs, int col) {
 
     char color = gs->state[0][col];
-    // If color isn't valid, leave.
-    if(color != BLACK && color != WHITE) {
+    int isAWin = TRUE;
+    // If the color isn't BLACK or WHITE, exit FALSE.
+    if(!isvalidcolor(color)) {
         return FALSE;
     }
-    // If color has already won, leave.
-    if((color == BLACK && gs->blackWon) || (color == WHITE && gs->whiteWon)) {
-        return TRUE; // We're not counting the number of wins, so what I return
-                     // here doesn't really matter.
+    // If the color has already won, exit TRUE.
+    if(hascolorwonyet(gs, color)) {
+        return TRUE;
     }
-    int isAWin = TRUE;
+    // Check for winner here.
     for(int y = 1; y < WIN_LEN && isAWin; y++) {
         isAWin = (gs->state[y][col] == color);
+    }
+    // Set a winner
+    if(isAWin) {
+        setwinner(gs, color);
     }
     return isAWin;
 }
 int checkup(GameState* gs, int col) {
     
     char color = gs->state[BOARD_SIZE - 1][col];
-    // If color isn't valid, leave.
-    if(color != BLACK && color != WHITE) {
+    int isAWin = TRUE;
+    // If the color isn't BLACK or WHITE, exit FALSE.
+    if(!isvalidcolor(color)) {
         return FALSE;
     }
-    // If color has already won, leave.
-    if((color == BLACK && gs->blackWon) || (color == WHITE && gs->whiteWon)) {
-        return TRUE; // We're not counting the number of wins, so what I return
-                     // here doesn't really matter.
+    // If the color has already won, exit TRUE.
+    if(hascolorwonyet(gs, color)) {
+        return TRUE;
     }
-    int isAWin = TRUE;
+    // Check for winner here.
     for(int y = BOARD_SIZE - 1; y >= (BOARD_SIZE - WIN_LEN) && isAWin; y--) {
         isAWin = (gs->state[y][col] == color);
+    }
+    // Set a winner
+    if(isAWin) {
+        setwinner(gs, color);
     }
     return isAWin;   
 }
 int checkright(GameState* gs, int row) {
 
     char color = gs->state[row][0];
-    // If color isn't valid, leave.
-    if(color != BLACK && color != WHITE) {
+    int isAWin = TRUE;
+    // If the color isn't BLACK or WHITE, exit FALSE.
+    if(!isvalidcolor(color)) {
         return FALSE;
     }
-    // If color has already won, leave.
-    if((color == BLACK && gs->blackWon) || (color == WHITE && gs->whiteWon)) {
-        return TRUE; // We're not counting the number of wins, so what I return
-                     // here doesn't really matter.
+    // If the color has already won, exit TRUE.
+    if(hascolorwonyet(gs, color)) {
+        return TRUE;
     }
-    int isAWin = TRUE;
+    // Check for winner here.
     for(int x = 0; x < WIN_LEN && isAWin; x++) {
         isAWin = (gs->state[row][x] == color);
+    }
+    // Set a winner
+    if(isAWin) {
+        setwinner(gs, color);
     }
     return isAWin;
 }
 int checkleft(GameState* gs, int row) {
     
     char color = gs->state[row][BOARD_SIZE - 1];
-    // If color isn't valid, leave.
-    if(color != BLACK && color != WHITE) {
+    int isAWin = TRUE;
+    // If the color isn't BLACK or WHITE, exit FALSE.
+    if(!isvalidcolor(color)) {
         return FALSE;
     }
-    // If color has already won, leave.
-    if((color == BLACK && gs->blackWon) || (color == WHITE && gs->whiteWon)) {
-        return TRUE; // We're not counting the number of wins, so what I return
-                     // here doesn't really matter.
+    // If the color has already won, exit TRUE.
+    if(hascolorwonyet(gs, color)) {
+        return TRUE;
     }
-    int isAWin = TRUE;
-    for(int x = BOARD_SIZE - 1; x >= (BOARD_SIZE - WIN_LEN) && isAWin; i--) {
+    // Check for winner here.
+    for(int x = BOARD_SIZE - 1; x >= (BOARD_SIZE - WIN_LEN) && isAWin; x--) {
         isAWin = (gs->state[row][x] == color);
+    }
+    // Set a winner
+    if(isAWin) {
+        setwinner(gs, color);
     }
     return isAWin;
 }
-
 // Code to check the four corners
-int checktopleft(GameState* gs) {}
-int checktopright(GameState* gs) {}
-int checkbottomleft(GameState* gs) {}
-int checkbottomright(GameStat* gs) {}
+// Checks for wins in the topleft corner, and the two diagonals 
+int checktopleft(GameState* gs) {
+    // We need inividual ints to check for each winner.
+    int winners[3] = {0, 0, 0};
+    // Check each diag here.
+    for(int i = 0; i < 3; i++) {
+        // Account for checking the short diags.
+        int xmod = 0, ymod = 0;
+        switch (i) {
+            case 1:
+                xmod = 1;
+                break;
+            case 2:
+                ymod = 1;
+                break;
+            default:
+                break;
+        }
+        // Get the right color
+        char color = gs->state[xmod][ymod];
+        int isvalid = isvalidcolor(color); // Is the color valid?
+        int iswon = hascolorwonyet(gs, color); // Has the color already won?
+        // If we've already won, we can ignore checking for a win.
+        // Otherwise we check for a win.
+        if(isvalid && iswon) {
+            winners[i] = TRUE;  // We want to communicate that a winner has been
+                                // declared. (Previously, that is.)
+        } else if(isvalid && !iswon) {
+            winners[i] = TRUE;
+            // Actually check for a win.
+            for(int j = 1; (j <= WIN_LEN) && winners[i]; j++) {
+                winners[i] = (gs->state[j + ymod][j + xmod] == color);
+            }
+            // If we've detected a win, set that winner. If control is false, we skip this.
+            if(winners[i]) {
+                setwinner(gs, color);
+            }
+        }
+    }
+    // If we detected a win here, communicate that.
+    return winners[0] || winners[1] || winners [2]; 
+}
+int checktopright(GameState* gs) {
+    // We need inividual ints to check for each winner.
+    int winners[3] = {0, 0, 0};
+    // Check each diag here.
+    for(int i = 0; i < 3; i++) {
+        // Account for checking the short diags.
+        int xmod = BOARD_SIZE - 1, ymod = 0;
+        switch (i) {
+            case 1:
+                xmod -= 1;
+                break;
+            case 2:
+                ymod = 1;
+                break;
+            default:
+                break;
+        }
+        // Get the right color
+        char color = gs->state[xmod][ymod];
+        int isvalid = isvalidcolor(color); // Is the color valid?
+        int iswon = hascolorwonyet(gs, color); // Has the color already won?
+        // If we've already won, we can ignore checking for a win.
+        // Otherwise we check for a win.
+        if(isvalid && iswon) {
+            winners[i] = TRUE;  // We want to communicate that a winner has been
+                                // declared. (Previously, that is.)
+        } else if(isvalid && !iswon) {
+            winners[i] = TRUE;
+            // Actually check for a win.
+            for(int j = 1; (j <= WIN_LEN) && winners[i]; j++) {
+                winners[i] = (gs->state[ymod + j][xmod - j] == color);
+            }
+            // If we've detected a win, set that winner.
+            if(winners[i]) {
+                setwinner(gs, color);
+            }
+        }
+    }
+    // If we detected a win here, communicate that.
+    return winners[0] || winners[1] || winners [2]; 
+}
+int checkbottomleft(GameState* gs) {
 
+    int isawin = TRUE;
+    // Account for the corner we're checking.
+    int ymod = BOARD_SIZE - 1;
+    char color = gs->state[ymod][0];
+    // If the color isn't BLACK or WHITE, exit FALSE.
+    if(!isvalidcolor(color)) {
+        return FALSE;
+    }
+    // If the color has already won, exit TRUE.
+    if(hascolorwonyet(gs, color)) {
+        return TRUE;
+    }
+    // Check for a win here.
+    for(int i = 1; i <= WIN_LEN && isawin; i++) {
+        isawin = (color == gs->state[ymod - i][i]);
+    }
+    if(isawin) {
+        setwinner(gs, color);
+    }
+    return isawin;
+}
+int checkbottomright(GameState* gs) {
+    
+    int isawin = TRUE;
+    // Account for the corner we're checking.
+    int xmod = BOARD_SIZE - 1, ymod = BOARD_SIZE - 1;
+    char color = gs->state[ymod][xmod];
+    // If the color isn't BLACK or WHITE, exit FALSE.
+    if(!isvalidcolor(color)) {
+        return FALSE;
+    }
+    // If the color has already won, exit TRUE.
+    if(hascolorwonyet(gs, color)) {
+        return TRUE;
+    }
+    // Check for a win here.
+    for(int i = 1; i <= WIN_LEN && isawin; i++) {
+        isawin = (color == gs->state[ymod - i][xmod - i]);
+    }
+    if(isawin) {
+        setwinner(gs, color);
+    }
+    return isawin;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Code to help the checkers above.
+int isvalidcolor(char color) {
+    return color == BLACK || color == WHITE;
+}
+int hascolorwonyet(GameState* gs, char color) {
+    return (color == BLACK && gs->blackWon) || (color == WHITE && gs->whiteWon);
+}
+void setwinner(GameState* gs, char color) {
+    if(color == BLACK) {
+        gs->blackWon = TRUE;
+    } else if(color == WHITE) {
+        gs->whiteWon = TRUE;
+    }
+}
