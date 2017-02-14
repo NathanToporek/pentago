@@ -21,7 +21,9 @@ typedef struct Game_State {
 } GameState;
 
 GameState*      init_GameState(void);
+GameState*      copy_GameState(GameState* gs);
 void            destroy_GameState(GameState* gs);
 void			print_state(GameState* gs);
 int             parse_move(GameState* gs, char* move);
 int             hasanyonewonyet(GameState* gs);
+int             equals(GameState* gs, GameState* other);

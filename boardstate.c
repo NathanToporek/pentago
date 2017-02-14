@@ -33,6 +33,31 @@ GameState* init_GameState(void) {
     return gs;
 }
 
+GameState* copy_GameState(GameState* gs) {
+    
+    // Fail if you can't even pasS ME A NON NULL GAMESTATE.
+    if(gs == NULL) {
+        return NULL;
+    }
+    GameState* cpy = malloc(1 * sizeof(GameState));
+    // Fail if fatal allocation error occurs.
+    if(cpy == NULL) {
+        return NULL;
+    }
+    // Copying non-state based information.
+    cpy->currTurn = gs->currTurn;
+    cpy->blackWon = gs->blackWon;
+    cpy->whiteWon = gs->whiteWon;
+    cpy->myTurn = gs->myTurn;
+    // Copying state information.
+    for(int y = 0; y < BOARD_SIZE; y++) {
+        for(int x = 0; x < BOARD_SIZE; x++) {
+            cpy->state[y][x] = gs->state[y][x];
+        }
+    }
+    return cpy;
+}
+
 void destroy_GameState(GameState *gs) {
     // We only need to actually do work if gs is not NULL.
     if(gs != NULL) {
@@ -216,6 +241,7 @@ int hasanyonewonyet(GameState* gs) {
     }
     return status;
 }
+
 int checkdown(GameState* gs, int col) {
 
     char color = gs->state[0][col];
@@ -444,8 +470,64 @@ int hascolorwonyet(GameState* gs, char color) {
 }
 void setwinner(GameState* gs, char color) {
     if(color == BLACK) {
+        puts("Set black as a winner.");
         gs->blackWon = TRUE;
     } else if(color == WHITE) {
+        puts("Set white as a winner.");
         gs->whiteWon = TRUE;
     }
 }
+
+// Code that determines if one GameState is equal to another.
+int equals(GameState* gs, GameState* other) {
+    
+    int equal = TRUE;
+    // If checking isn't necessary.
+    if(gs == NULL || other == NULL) {
+        equal &= FALSE;
+    }
+    equal &= (gs->blackWon == other->blackWon)
+          && (gs->whiteWon == other->whiteWon)
+          && (gs->currTurn == other->currTurn)
+          && (gs->myTurn == other->myTurn);
+    for(int y = 0; y < BOARD_SIZE && equal; y++) {
+        for(int x = 0; x < BOARD_SIZE; x++) {
+            equal &= (gs->state[y][x] == other->state[y][x]);
+        }
+    }
+    return equal;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
