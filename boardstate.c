@@ -30,6 +30,7 @@ GameState* init_GameState(void) {
     gs->blackWon = FALSE;
     gs->whiteWon = FALSE;
     gs->currTurn = BLACK;
+    gs->myTurn = '\0';
     return gs;
 }
 
@@ -350,7 +351,7 @@ int checktopleft(GameState* gs) {
                 break;
         }
         // Get the right color
-        char color = gs->state[xmod][ymod];
+        char color = gs->state[ymod][xmod];
         int isvalid = isvalidcolor(color); // Is the color valid?
         int iswon = hascolorwonyet(gs, color); // Has the color already won?
         // If we've already won, we can ignore checking for a win.
@@ -361,7 +362,7 @@ int checktopleft(GameState* gs) {
         } else if(isvalid && !iswon) {
             winners[i] = TRUE;
             // Actually check for a win.
-            for(int j = 1; (j <= WIN_LEN) && winners[i]; j++) {
+            for(int j = 1; (j < WIN_LEN) && winners[i]; j++) {
                 winners[i] = (gs->state[j + ymod][j + xmod] == color);
             }
             // If we've detected a win, set that winner. If control is false, we skip this.
@@ -391,7 +392,7 @@ int checktopright(GameState* gs) {
                 break;
         }
         // Get the right color
-        char color = gs->state[xmod][ymod];
+        char color = gs->state[ymod][xmod];
         int isvalid = isvalidcolor(color); // Is the color valid?
         int iswon = hascolorwonyet(gs, color); // Has the color already won?
         // If we've already won, we can ignore checking for a win.
@@ -402,7 +403,7 @@ int checktopright(GameState* gs) {
         } else if(isvalid && !iswon) {
             winners[i] = TRUE;
             // Actually check for a win.
-            for(int j = 1; (j <= WIN_LEN) && winners[i]; j++) {
+            for(int j = 1; (j < WIN_LEN ) && winners[i]; j++) {
                 winners[i] = (gs->state[ymod + j][xmod - j] == color);
             }
             // If we've detected a win, set that winner.
@@ -429,7 +430,7 @@ int checkbottomleft(GameState* gs) {
         return TRUE;
     }
     // Check for a win here.
-    for(int i = 1; i <= WIN_LEN && isawin; i++) {
+    for(int i = 1; i < WIN_LEN && isawin; i++) {
         isawin = (color == gs->state[ymod - i][i]);
     }
     if(isawin) {
@@ -452,7 +453,7 @@ int checkbottomright(GameState* gs) {
         return TRUE;
     }
     // Check for a win here.
-    for(int i = 1; i <= WIN_LEN && isawin; i++) {
+    for(int i = 1; i < WIN_LEN && isawin; i++) {
         isawin = (color == gs->state[ymod - i][xmod - i]);
     }
     if(isawin) {
@@ -466,14 +467,17 @@ int isvalidcolor(char color) {
     return color == BLACK || color == WHITE;
 }
 int hascolorwonyet(GameState* gs, char color) {
-    return (color == BLACK && gs->blackWon) || (color == WHITE && gs->whiteWon);
+    if(color == BLACK && gs->blackWon) {
+        return TRUE;
+    } else if(color == WHITE && gs->whiteWon) {
+        return TRUE;
+    }
+    return FALSE;
 }
 void setwinner(GameState* gs, char color) {
     if(color == BLACK) {
-        puts("Set black as a winner.");
         gs->blackWon = TRUE;
     } else if(color == WHITE) {
-        puts("Set white as a winner.");
         gs->whiteWon = TRUE;
     }
 }
