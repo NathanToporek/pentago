@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "boardstate.h"
 
 // Private functions. Use parse_move to apply a move.
@@ -57,6 +61,18 @@ GameState* copy_GameState(GameState* gs) {
         }
     }
     return cpy;
+}
+// Copies gs into other, assuming that neither is null.
+void copy_into(GameState* gs, GameState* other) {
+    
+    if(gs == NULL || other == NULL) {
+        return;
+    }
+    for(int y = 0; y < BOARD_SIZE; y++) {
+        for(int x = 0; x < BOARD_SIZE; x++) {
+            other->state[y][x] = gs->state[y][x];
+        }
+    }
 }
 
 void destroy_GameState(GameState *gs) {
@@ -150,7 +166,7 @@ int parse_move(GameState* gs, char* move) {
     }
     // If the place on the board is taken, exit.
     if(gs->state[y][x] == BLACK || gs->state[y][x] == WHITE) {
-        printf("You did a bad. Someone already played here.\n");
+        //printf("You did a bad. Someone already played here.\n");
         return FALSE;
     }
     // ACTUALLY APPLY THE MOVE.    
@@ -501,37 +517,3 @@ int equals(GameState* gs, GameState* other) {
     }
     return equal;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
