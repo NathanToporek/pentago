@@ -5,7 +5,7 @@
 #include "boardstate.h"
 
 // Private functions. Use parse_move to apply a move.
-void        apply_move(GameState* gs, int block, int x, int y);
+void        apply_move(GameState* gs, int block, int pos);
 void        apply_rotation(GameState* gs, int block, char dir);
 
 // Private functions for hasanyonewonyet(). they need to be implemented.
@@ -68,6 +68,13 @@ void copy_into(GameState* gs, GameState* other) {
     if(gs == NULL || other == NULL) {
         return;
     }
+    
+    // Copying non-state based information.
+    other->currTurn = gs->currTurn;
+    other->blackWon = gs->blackWon;
+    other->whiteWon = gs->whiteWon;
+    other->myTurn = gs->myTurn;
+    
     for(int y = 0; y < BOARD_SIZE; y++) {
         for(int x = 0; x < BOARD_SIZE; x++) {
             other->state[y][x] = gs->state[y][x];
@@ -93,15 +100,15 @@ void print_state(GameState* gs) {
     puts("\t+-------+-------+");
     // Lots of logic all up in heah, don't worry it should work.
     for(int i = 0; i < BOARD_SIZE; i++) {
-        if(i == BLOCK_SIZE) {
+        if(i == (BLOCK_SIZE)) {
             puts("\t+-------+-------+");
         }
         printf("\t|");
         for(int j = 0; j < BOARD_SIZE; j++) {
-            if(j == BLOCK_SIZE) {
+            if(j == (BLOCK_SIZE)) {
                 printf(" | ");
             }
-            if(j < BLOCK_SIZE) {
+            if(j < (BLOCK_SIZE)) {
                 printf(" ");
             }
             if(gs->state[i][j] != BLACK && gs->state[i][j] != WHITE) {
@@ -109,7 +116,7 @@ void print_state(GameState* gs) {
             } else {
                 printf("%c", gs->state[i][j]);
             }
-            if(j >= BLOCK_SIZE) {
+            if(j >= (BLOCK_SIZE)) {
                 printf(" ");
             }
         }
@@ -117,6 +124,33 @@ void print_state(GameState* gs) {
     }
     printf("\t+-------+-------+\n\n");
 }
+
+char get_piece(GameState* gs, int block, int pos) {
+    // If you're stupid.
+    if(gs == NULL || (block > BLOCKS || block < 1) || (pos > POSITIONS || pos < 1)) {
+        return '\0';
+    }
+    int xmod = (pos - 1) % (BLOCK_SIZE);
+    int ymod = (pos - 1) / (BLOCK_SIZE);
+    
+
+    switch(block) {
+        case 2:
+            xmod += (BLOCK_SIZE);
+            break;
+        case 3:
+            ymod += (BLOCK_SIZE);
+            break;
+        case 4:
+            xmod += (BLOCK_SIZE);
+            ymod += (BLOCK_SIZE);
+            break;
+        default:
+            break;
+    }
+    return gs->state[ymod][xmod];
+}
+
 // Parses the move and prepares it to be applied to the passed gamestate.
 int parse_move(GameState* gs, char* move) {
     
@@ -133,7 +167,7 @@ int parse_move(GameState* gs, char* move) {
     slot = pos[2] - '0';
     rotblock = rot[0] - '0';
     // If any of these are bad, tell the user to hecc off with their crap.
-    if(block > 4 || block < 1 || slot > 9 || slot < 1 || rotblock > 4 || rotblock < 1) {
+    if(block > BLOCKS || block < 1 || slot > POSITIONS || slot < 1 || rotblock > BLOCKS || rotblock < 1) {
         printf("pls stp been redarted. gib valld mov pls.\n");
         return FALSE;
     }
@@ -144,35 +178,14 @@ int parse_move(GameState* gs, char* move) {
         return FALSE;
     }
     // Check if the move is valid.
-    int x = (slot - 1) % (BLOCK_SIZE);
-    int y = (slot - 1) / (BLOCK_SIZE);
-    // Accounting for each block.
-    switch (block) {
-        case 2:
-            // Move to top right block.
-            x += BLOCK_SIZE;
-            break;
-        case 3:
-            // Move to bottom left block.
-            y += BLOCK_SIZE;
-            break;
-        case 4:
-            // Move to bottom right block.
-            x += BLOCK_SIZE;
-            y += BLOCK_SIZE;
-            break;
-        default:
-            break;
-    }
+    char piece = get_piece(gs, block, slot);
     // If the place on the board is taken, exit.
-    if(gs->state[y][x] == BLACK || gs->state[y][x] == WHITE) {
-        //printf("You did a bad. Someone already played here.\n");
+    if(piece == BLACK || piece == WHITE) {
         return FALSE;
     }
     // ACTUALLY APPLY THE MOVE.    
-    apply_move(gs, block, x, y);
+    apply_move(gs, block, slot);
     if(hasanyonewonyet(gs)) {
-        printf("We have a winner!\n");  
         return TRUE; // Exit TRUE, if someone's won. As the game/move has completed.
     }
     apply_rotation(gs, rotblock, direction);
@@ -181,9 +194,27 @@ int parse_move(GameState* gs, char* move) {
     return TRUE;
 }
 
-void apply_move(GameState* gs, int block, int x, int y) {
+void apply_move(GameState* gs, int block, int pos) {
     
-    gs->state[y][x] = gs->currTurn;
+    int xmod = (pos - 1) % (BLOCK_SIZE);
+    int ymod = (pos - 1) / (BLOCK_SIZE);
+
+    switch(block) {
+        case 2:
+            xmod += (BLOCK_SIZE);
+            break;
+        case 3:
+            ymod += (BLOCK_SIZE);
+            break;
+        case 4:
+            xmod += (BLOCK_SIZE);
+            ymod += (BLOCK_SIZE);
+            break;
+        default:
+            break;
+    }
+    
+    gs->state[ymod][xmod] = gs->currTurn;
     
     // Update whose turn it is.
     if(gs->currTurn == BLACK) {
@@ -195,46 +226,46 @@ void apply_move(GameState* gs, int block, int x, int y) {
 
 void apply_rotation(GameState* gs, int block, char dir) {
     
-    char tmp[BLOCK_SIZE][BLOCK_SIZE];
+    char tmp[(BLOCK_SIZE)][(BLOCK_SIZE)];
     
     // Get the x and y modifier for the block
     int xmod = 0, ymod = 0;
     switch(block) { 
         case 2:
             // Top right block.
-            xmod = BLOCK_SIZE;
+            xmod = (BLOCK_SIZE);
             break;
         case 3:
             // Bottom left block.
-            ymod = BLOCK_SIZE;
+            ymod = (BLOCK_SIZE);
             break;
         case 4:
             // Bottom right block.
-            xmod = BLOCK_SIZE;
-            ymod = BLOCK_SIZE;
+            xmod = (BLOCK_SIZE);
+            ymod = (BLOCK_SIZE);
             break;
         default:
             break;        
     }
     // Copy data into tmp
-    for(int y = 0; y < BLOCK_SIZE; y++) {
-        for(int x = 0; x < BLOCK_SIZE; x++) {
+    for(int y = 0; y < (BLOCK_SIZE); y++) {
+        for(int x = 0; x < (BLOCK_SIZE); x++) {
             tmp[y][x] = gs->state[y + ymod][x + xmod];
         }
     }
     // **Do the twist**
     if(dir == 'R') {
         // Right rotate tmp into gs->state   
-        for(int y = 0; y < BLOCK_SIZE; y++) {
-            for(int x = 0; x < BLOCK_SIZE; x++) {
-                gs->state[y + ymod][x + xmod] = tmp[BLOCK_SIZE - x - 1][y];
+        for(int y = 0; y < (BLOCK_SIZE); y++) {
+            for(int x = 0; x < (BLOCK_SIZE); x++) {
+                gs->state[y + ymod][x + xmod] = tmp[(BLOCK_SIZE) - x - 1][y];
             }
         }
     } else if(dir == 'L') {
         // Left rotate tmp into gs->state
-        for(int y = 0; y < BLOCK_SIZE; y++) {
-            for(int x = 0; x < BLOCK_SIZE; x++) {
-                gs->state[y + ymod][x + xmod]= tmp[x][BLOCK_SIZE - y - 1];
+        for(int y = 0; y < (BLOCK_SIZE); y++) {
+            for(int x = 0; x < (BLOCK_SIZE); x++) {
+                gs->state[y + ymod][x + xmod]= tmp[x][(BLOCK_SIZE) - y - 1];
             }
         }
     } 

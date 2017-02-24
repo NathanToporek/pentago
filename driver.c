@@ -1,6 +1,9 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "boardstate.h"
+#include "gametree.h"
 
 #define TURN_LEN            10
 #define MEME_OVERLOAD       9001
@@ -12,12 +15,18 @@ void            declare_winners(GameState* gs);
 int main(int argc, char** argv) {
     
     GameState* gs = start_game();
-    if(gs == NULL) {
+    gt_node* root;
+    if(gs == NULL || root == NULL) {
         puts("Ooops! Something went wront. Exiting now.");
         exit(MEME_OVERLOAD);
     }
     do {
-        
+        // Build our AI's gametree.
+        printf("BUILDING GAMETREE.\n\n");
+        root = init_root(gs);
+        build_gt_minimax();
+        printf("ROOT'S UTILITY IS: %d\n\n", root->utility);
+        // Print Turn info.
         print_state(gs);
         printf("Current Turn: ");
         if(gs->currTurn == BLACK) {
@@ -27,10 +36,12 @@ int main(int argc, char** argv) {
         }
         
         char* turn = get_turn();
-
         // Hopefully clear the screen. :D
         puts("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-        parse_move(gs, turn); 
+        if(!parse_move(gs, turn)) {
+            puts("You probably tried to play in a taken spot. Silly.\n");
+        } 
+        destroy_gt(root);
         puts("");
         
         free(turn);

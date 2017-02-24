@@ -4,23 +4,40 @@
 
 #include "gametree.h"
 
-#define MEME_OVERLOAD   9001
+#define max(a, b)           ((a >= b) ? (a) : (b))
+#define min(a, b)           ((a <= b) ? (a) : (b))
 
-#define MAX_DEPTH       5
-#define RESIZE_FACTOR	36
-#define MOVE_LEN        8
+#define MEME_OVERLOAD       9001
 
-#define POSITIONS       9
-#define BLOCKS          4
-#define DIRECTIONS      2
+#define MAX_DEPTH_MINIMAX   4
+#define RESIZE_FACTOR	    36
+#define MOVE_LEN            8
 
-#define RIGHT           1
-#define LEFT            2
+#define POSITIONS           9
+#define BLOCKS              4
+#define DIRECTIONS          2
+
+#define RIGHT               1
+#define LEFT                2
+
+// Utility Values
+#define POS_2_4_6_8         1
+#define POS_1_3_7_9         3
+#define POS_5               5
+#define THREE_IN_A_ROW      20
+#define TIE                 5000
+#define WIN                 100000
+
 
 void        __build_gt(gt_node* root, int depth);
 gt_node*    __init_gt_node(void);
 void        __destroy_gt_node(gt_node* node);
+void        __calculate_utility(gt_node* node);
 void        fail();
+void        __translate(int block, int* x, int* y);
+int         __check_diags(gt_node* node, int block);
+int         __check_right(gt_node* node, int block, int row);
+int         __check_down(gt_node* node, int block, int col);
 
 gt_node*	ROOT;
 
@@ -55,7 +72,7 @@ void destroy_gt(gt_node* root) {
     return;
 }
 
-void build_gt() {
+void build_gt_minimax() {
 	
 	__build_gt(ROOT, 1);
 }
@@ -63,7 +80,8 @@ void build_gt() {
 void __build_gt(gt_node* root, int depth) {
 	
 	// If we've surpassed MAX_DEPTH, leave.
-	if(depth >= MAX_DEPTH) {
+	if(depth >= MAX_DEPTH_MINIMAX) {
+	    __calculate_utility(root);
 		return;
 	}
 	// Iterate over all moves
@@ -100,12 +118,20 @@ void __build_gt(gt_node* root, int depth) {
                     } else {
                         __destroy_gt_node(child);
                     }
+                    // We can perform minimax as we generate this tree.
+                    if(child != NULL) {
+                        if(root->utility == 0) {
+                            root->utility = child->utility; // If there is no utility. DO IT
+                        } else if(root->state->currTurn == root->state->myTurn) { // MAX
+                            root->utility = max(root->utility, child->utility);
+                        } else if(root->state->currTurn != root->state->myTurn) { // MIN
+                            root->utility = max(root->utility, child->utility);
+                        }
+                    }
                 }
             }
         }
     }
-//    printf("I HAVE %d CHILDREN.\n\nHERE IS MY CHILD CLASS.\n\n", root->children->size);
-//    print_state(root->state);
 }
 
 int contains_state(gt_node* node, GameState* gs) {
@@ -152,7 +178,161 @@ void __destroy_gt_node(gt_node* node) {
     }
 }
 
+void __calculate_utility(gt_node* node) {
+    
+    // We only calculate utility for leaf nodes.
+    if(node->children->size != 0) {
+        return;
+    }
+    int multiplier = 0;
+    int utility = 0;
+    GameState* state = node->state;
+    // Add utility for controlling positions.
+    for(int block = 1; block <= BLOCKS; block++) {
+        for(int pos = 1; pos <= POSITIONS; pos++) {
+            char piece = get_piece(state, block, pos);
+            
+            if(piece == state->myTurn && (piece == BLACK || piece == WHITE)) {
+                multiplier = 1;
+            } else if(piece != state->myTurn && (piece == BLACK || piece == WHITE)){
+                multiplier = -1;
+            } else {
+                multiplier = 0;
+            }
+            if(pos == 5) {
+                utility += POS_5 * multiplier;
+            } else if(pos % 2) {
+                utility += POS_1_3_7_9 * multiplier;
+            } else {
+                utility += POS_2_4_6_8 * multiplier;
+            }
+        }
+    }
+    int xmod = 0;
+    int ymod = 0;
+    // Check for 3 in a rows.
+    for(int block = 1; block < BLOCKS; block++) {
+        // Check for diagonal 3s
+        utility += __check_diags(node, block);
+        
+        for(int pos = 0; pos < BLOCK_SIZE; pos++) {
+            utility += __check_right(node, block, pos);
+            utility += __check_down(node, block, pos);
+        }
+    }
+    
+    // Checking for wins/losses.
+    if(state->blackWon && state->whiteWon) {
+        utility -= TIE; // A tie is very bad.
+    } else if(state->blackWon && state->myTurn == BLACK) {
+        utility += WIN;
+    } else if(state->whiteWon && state->myTurn == WHITE) {
+        utility += WIN;
+    } else if(state->blackWon && state->myTurn == WHITE) {
+        utility -= WIN;
+    } else if(state->whiteWon && state->myTurn == BLACK) {
+        utility -= WIN;
+    }
+    node->utility = utility;
+}
+
 void fail() {
     printf("FATAL ERROR OCCURRED. EXITING.\n\n");
     exit(MEME_OVERLOAD);    
+}
+
+void __translate(int block, int* x, int* y) {
+    
+    switch(block) {
+        case 2:
+            *x += BLOCK_SIZE;
+            break;
+        case 3:
+            *y += BLOCK_SIZE;
+            break;
+        case 4:
+            *x += BLOCK_SIZE;
+            *y += BLOCK_SIZE;
+            break;
+        default:
+            break;
+    }
+}
+
+int __check_diags(gt_node* node, int block) {
+    char tl, tr;
+    int x1 = 0, x2 = BLOCK_SIZE - 1, y = 0, utility = 0;
+    __translate(block, &x1, &y);
+    __translate(block, &x2, &y);
+    // Get the chars we need to look at.
+    tl = node->state->state[y][x1];
+    tr = node->state->state[y][x2];
+
+    int eq = TRUE;
+    // Check top left, then check top right.
+    if(tl == BLACK || tl == WHITE) {
+        for(int inc = 1; inc < BLOCK_SIZE && eq; inc++) {
+            eq &= (tl == node->state->state[y + inc][x1 + inc]);
+        }
+        
+        if(eq && (tl == node->state->myTurn)) {
+            utility += THREE_IN_A_ROW;
+        } else if(eq && (tl != node->state->myTurn)) {
+            utility -= THREE_IN_A_ROW;
+        }
+    }
+    eq = TRUE;
+    if(tr == BLACK || tr == WHITE) {
+        for(int inc = 1; inc < BLOCK_SIZE; inc++) {
+            eq &= (tr == node->state->state[y + inc][x2 - inc]);
+        }
+        if(eq && (tr == node->state->myTurn)) {
+            utility += THREE_IN_A_ROW;
+        } else if(eq && (tr != node->state->myTurn)) {
+            utility -= THREE_IN_A_ROW;
+        }
+    }
+    return utility;
+}
+
+int __check_right(gt_node* node, int block, int row) {
+
+    char chr;
+    int x = 0, y = row, utility = 0;
+    __translate(block, &x, &y);
+    chr = node->state->state[y][x];
+    
+    int eq = TRUE;
+    if(chr == BLACK || chr == WHITE) {
+        for(int i = 0; i < BLOCK_SIZE; i++) {
+            eq &= (chr == node->state->state[y][x + i]);
+        }    
+        if(eq && chr == node->state->myTurn) {
+            utility += THREE_IN_A_ROW;
+        } else if (eq && (chr != node->state->myTurn)) {
+            utility -= THREE_IN_A_ROW;
+        }
+    }
+    return utility;
+}
+
+int __check_down(gt_node* node, int block, int col) {
+    
+    char chr;
+    int x = col, y = 0, utility = 0;
+    __translate(block, &x, &y);
+    chr = node->state->state[y][x];
+    
+    int eq = TRUE;
+    if(chr == BLACK || chr == WHITE) {
+        for(int i = 0; i < BLOCK_SIZE; i++) {
+            eq &= (chr == node->state->state[y + i][x]);
+        }    
+        if(eq && chr == node->state->myTurn) {
+            utility += THREE_IN_A_ROW;
+        } else if (eq && (chr != node->state->myTurn)) {
+            utility -= THREE_IN_A_ROW;
+        }
+    }
+    return utility;
 }

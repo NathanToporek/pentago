@@ -1,5 +1,5 @@
-exe.exe: driver.o boardstate.o
-	gcc -o exe.exe driver.o boardstate.o
+exe.exe: driver.o boardstate.o gametree.o linkedlist.o
+	gcc -o exe.exe driver.o boardstate.o gametree.o linkedlist.o
 
 test.exe: testCode.o linkedlist.o boardstate.o gametree.o
 	gcc -o test.exe testCode.o linkedlist.o boardstate.o gametree.o
