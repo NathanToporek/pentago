@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "boardstate.h"
@@ -16,7 +17,7 @@ int main(int argc, char** argv) {
     
     GameState* gs = start_game();
     gt_node* root;
-    if(gs == NULL || root == NULL) {
+    if(gs == NULL) {
         puts("Ooops! Something went wront. Exiting now.");
         exit(MEME_OVERLOAD);
     }
@@ -24,8 +25,6 @@ int main(int argc, char** argv) {
         // Build our AI's gametree.
         printf("BUILDING GAMETREE.\n\n");
         root = init_root(gs);
-        build_gt_minimax();
-        printf("ROOT'S UTILITY IS: %d\n\n", root->utility);
         // Print Turn info.
         print_state(gs);
         printf("Current Turn: ");
@@ -35,9 +34,21 @@ int main(int argc, char** argv) {
             printf("WHITE\n\n");
         }
         
-        char* turn = get_turn();
-        // Hopefully clear the screen. :D
-        puts("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        char* turn = NULL;
+        
+        if(gs->currTurn != gs->myTurn) {
+            turn = get_turn();
+            // Hopefully clear the screen. :D
+	        puts("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        } else if(gs->currTurn == gs->myTurn) {
+            turn = malloc(MOVE_LEN * sizeof(char));
+            memcpy(turn, build_gt_abpruning(), MOVE_LEN);
+            // Hopefully clear the screen. :D
+            puts("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+            printf("THE AI WILL PLAY THE MOVE: %s\n", turn);
+            printf("EXPECTED UTILITY: %d\n", root->utility);
+        }
+        
         if(!parse_move(gs, turn)) {
             puts("You probably tried to play in a taken spot. Silly.\n");
         } 

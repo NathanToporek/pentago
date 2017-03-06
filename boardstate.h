@@ -6,6 +6,7 @@
 #define BOARD_SIZE      6
 #define BLOCK_SIZE      (BOARD_SIZE / 2)
 #define WIN_LEN         5
+#define MOVE_LEN        8
 
 #define BLOCKS          4
 #define POSITIONS       9

@@ -154,7 +154,11 @@ char get_piece(GameState* gs, int block, int pos) {
 // Parses the move and prepares it to be applied to the passed gamestate.
 int parse_move(GameState* gs, char* move) {
     
-    char *pos = strtok(move, " ");
+    // Copy the move.    
+    char* cpy = malloc(MOVE_LEN * sizeof(char));
+    memcpy(cpy, move, MOVE_LEN);
+    
+    char *pos = strtok(cpy, " ");
     char *rot = strtok(NULL, "");
     
     if(pos == NULL || rot == NULL) {
@@ -191,6 +195,8 @@ int parse_move(GameState* gs, char* move) {
     apply_rotation(gs, rotblock, direction);
     hasanyonewonyet(gs); // We don't need to conditionally do something here.
                          // Just set a winner, it's the engine's job to output that shit.
+                         
+    free(cpy);	
     return TRUE;
 }
 
@@ -226,46 +232,46 @@ void apply_move(GameState* gs, int block, int pos) {
 
 void apply_rotation(GameState* gs, int block, char dir) {
     
-    char tmp[(BLOCK_SIZE)][(BLOCK_SIZE)];
+    char tmp[BLOCK_SIZE][BLOCK_SIZE];
     
     // Get the x and y modifier for the block
     int xmod = 0, ymod = 0;
     switch(block) { 
         case 2:
             // Top right block.
-            xmod = (BLOCK_SIZE);
+            xmod = BLOCK_SIZE;
             break;
         case 3:
             // Bottom left block.
-            ymod = (BLOCK_SIZE);
+            ymod = BLOCK_SIZE;
             break;
         case 4:
             // Bottom right block.
-            xmod = (BLOCK_SIZE);
-            ymod = (BLOCK_SIZE);
+            xmod = BLOCK_SIZE;
+            ymod = BLOCK_SIZE;
             break;
         default:
             break;        
     }
     // Copy data into tmp
-    for(int y = 0; y < (BLOCK_SIZE); y++) {
-        for(int x = 0; x < (BLOCK_SIZE); x++) {
+    for(int y = 0; y < BLOCK_SIZE; y++) {
+        for(int x = 0; x < BLOCK_SIZE; x++) {
             tmp[y][x] = gs->state[y + ymod][x + xmod];
         }
     }
     // **Do the twist**
     if(dir == 'R') {
         // Right rotate tmp into gs->state   
-        for(int y = 0; y < (BLOCK_SIZE); y++) {
-            for(int x = 0; x < (BLOCK_SIZE); x++) {
-                gs->state[y + ymod][x + xmod] = tmp[(BLOCK_SIZE) - x - 1][y];
+        for(int y = 0; y < BLOCK_SIZE; y++) {
+            for(int x = 0; x < BLOCK_SIZE; x++) {
+                gs->state[y + ymod][x + xmod] = tmp[BLOCK_SIZE - x - 1][y];
             }
         }
     } else if(dir == 'L') {
         // Left rotate tmp into gs->state
-        for(int y = 0; y < (BLOCK_SIZE); y++) {
-            for(int x = 0; x < (BLOCK_SIZE); x++) {
-                gs->state[y + ymod][x + xmod]= tmp[x][(BLOCK_SIZE) - y - 1];
+        for(int y = 0; y < BLOCK_SIZE; y++) {
+            for(int x = 0; x < BLOCK_SIZE; x++) {
+                gs->state[y + ymod][x + xmod]= tmp[x][BLOCK_SIZE - y - 1];
             }
         }
     } 

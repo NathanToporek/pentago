@@ -19,7 +19,9 @@ gt_node*        init_root(GameState* gs);
 /* Recursively destroys this GameTree from the node passed in. */
 void            destroy_gt(gt_node* root);
 // Builds a gametree. Let's hope this works.
-void            build_gt_minimax();
+char*            build_gt_minimax();
+// Builds a gametree using alpha-beta pruning.
+char*           build_gt_abpruning();
 
 int             contains_state(gt_node* node, GameState* gs);
 /* Reorganizes this tree to have the gt_node with the specified GameState as the 
