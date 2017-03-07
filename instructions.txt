@@ -1,0 +1,17 @@
+Compilation Instructions:
+
+* There is a makefile in the directory src/
+* This software was written in Ubuntu 16.04, as such it may not compile propely in Windows.
+
+1) Switch into the src/ directory
+2) issue the command: "make exe.exe"
+3) The program should build just fine.
+
+Game-Play Instructions:
+
+1) Start the program in linux by issuing the command "./exe.exe"
+2) Select how you would like the AI to build its gametree
+3) The program will determine which player is going to play first
+4) Enter your move in the form of: block/pos blockdirection
+       Ex.: "4/4 4R" places a piece in position four in block 4, then rotates block 4 Right
+5) Play the game!      

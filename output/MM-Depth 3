@@ -1,0 +1,600 @@
+How would you like our AI to play today?:
+A) Alpha-Beta Pruning w/ MiniMax
+M) Just MiniMax
+Your choice (A/M): M
+Should be minimax
+
+GameState Initialized!
+Choosing the AI's turn now!
+
+The AI will play as BLACK!
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * * | * * * |
+	| * * * | * * * |
+	| * * * | * * * |
+	+-------+-------+
+	| * * * | * * * |
+	| * * * | * * * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 7036
+THE AI WILL PLAY THE MOVE: 3/5 1R
+EXPECTED UTILITY: 0
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * * | * * * |
+	| * * * | * * * |
+	| * * * | * * * |
+	+-------+-------+
+	| * * * | * * * |
+	| * b * | * * * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 1/9 4R
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * * | * * * |
+	| * * * | * * * |
+	| * * w | * * * |
+	+-------+-------+
+	| * * * | * * * |
+	| * b * | * * * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 29316
+THE AI WILL PLAY THE MOVE: 4/5 2R
+EXPECTED UTILITY: 0
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * * | * * * |
+	| * * * | * * * |
+	| * * w | * * * |
+	+-------+-------+
+	| * * * | * * * |
+	| * b * | * b * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 1/8 4R
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * * | * * * |
+	| * * * | * * * |
+	| * w w | * * * |
+	+-------+-------+
+	| * * * | * * * |
+	| * b * | * b * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 26880
+THE AI WILL PLAY THE MOVE: 4/4 1R
+EXPECTED UTILITY: 0
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * * | * * * |
+	| w * * | * * * |
+	| w * * | * * * |
+	+-------+-------+
+	| * * * | * * * |
+	| * b * | b b * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 3/6 1R
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| w w * | * * * |
+	| * * * | * * * |
+	| * * * | * * * |
+	+-------+-------+
+	| * * * | * * * |
+	| * b w | b b * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 86425
+THE AI WILL PLAY THE MOVE: 2/7 3L
+EXPECTED UTILITY: 18
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| w w * | * * * |
+	| * * * | * * * |
+	| * * * | b * * |
+	+-------+-------+
+	| * w * | * * * |
+	| * b * | b b * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 1/3 3R
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| w w w | * * * |
+	| * * * | * * * |
+	| * * * | b * * |
+	+-------+-------+
+	| * * * | * * * |
+	| * b w | b b * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 94664
+THE AI WILL PLAY THE MOVE: 2/4 3L
+EXPECTED UTILITY: -236
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| w w w | * * * |
+	| * * * | b * * |
+	| * * * | b * * |
+	+-------+-------+
+	| * w * | * * * |
+	| * b * | b b * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 3/6 4L
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| w w w | * * * |
+	| * * * | b * * |
+	| * * * | b * * |
+	+-------+-------+
+	| * w * | * * * |
+	| * b w | * b * |
+	| * * * | * b * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 82309
+THE AI WILL PLAY THE MOVE: 3/3 4R
+EXPECTED UTILITY: -165524
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| w w w | * * * |
+	| * * * | b * * |
+	| * * * | b * * |
+	+-------+-------+
+	| * w b | * * * |
+	| * b w | b b * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 3/1 1R
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * w | * * * |
+	| * * w | b * * |
+	| * * w | b * * |
+	+-------+-------+
+	| w w b | * * * |
+	| * b w | b b * |
+	| * * * | * * * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 61395
+THE AI WILL PLAY THE MOVE: 3/7 3L
+EXPECTED UTILITY: -262
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * w | * * * |
+	| * * w | b * * |
+	| * * w | b * * |
+	+-------+-------+
+	| b w * | * * * |
+	| w b * | b b * |
+	| w * b | * * * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 2/5 3R
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * w | * * * |
+	| * * w | b w * |
+	| * * w | b * * |
+	+-------+-------+
+	| w w b | * * * |
+	| * b w | b b * |
+	| b * * | * * * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 51353
+THE AI WILL PLAY THE MOVE: 3/8 3L
+EXPECTED UTILITY: -258
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * w | * * * |
+	| * * w | b w * |
+	| * * w | b * * |
+	+-------+-------+
+	| b w * | * * * |
+	| w b b | b b * |
+	| w * b | * * * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 4/6 2L
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * w | * * * |
+	| * * w | * w * |
+	| * * w | * b b |
+	+-------+-------+
+	| b w * | * * * |
+	| w b b | b b w |
+	| w * b | * * * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 48800
+THE AI WILL PLAY THE MOVE: 2/4 1R
+EXPECTED UTILITY: -36
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * * | * * * |
+	| * * * | b w * |
+	| w w w | * b b |
+	+-------+-------+
+	| b w * | * * * |
+	| w b b | b b w |
+	| w * b | * * * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 2/2 4L
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * * | * w * |
+	| * * * | b w * |
+	| w w w | * b b |
+	+-------+-------+
+	| b w * | * w * |
+	| w b b | * b * |
+	| w * b | * b * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 39074
+THE AI WILL PLAY THE MOVE: 2/3 2R
+EXPECTED UTILITY: -99742
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * * | * b * |
+	| * * * | b w w |
+	| w w w | b * b |
+	+-------+-------+
+	| b w * | * w * |
+	| w b b | * b * |
+	| w * b | * b * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 2/8 2R
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * * * | b b * |
+	| * * * | w w b |
+	| w w w | b w * |
+	+-------+-------+
+	| b w * | * w * |
+	| w b b | * b * |
+	| w * b | * b * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 27024
+THE AI WILL PLAY THE MOVE: 1/2 2L
+EXPECTED UTILITY: 16
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * b * | * b * |
+	| * * * | b w w |
+	| w w w | b w b |
+	+-------+-------+
+	| b w * | * w * |
+	| w b b | * b * |
+	| w * b | * b * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 1/5 2R
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * b * | b b * |
+	| * w * | w w b |
+	| w w w | b w * |
+	+-------+-------+
+	| b w * | * w * |
+	| w b b | * b * |
+	| w * b | * b * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 20510
+THE AI WILL PLAY THE MOVE: 4/4 2L
+EXPECTED UTILITY: 24
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * b * | * b * |
+	| * w * | b w w |
+	| w w w | b w b |
+	+-------+-------+
+	| b w * | * w * |
+	| w b b | b b * |
+	| w * b | * b * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 4/6 2R
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * b * | b b * |
+	| * w * | w w b |
+	| w w w | b w * |
+	+-------+-------+
+	| b w * | * w * |
+	| w b b | b b w |
+	| w * b | * b * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 14892
+THE AI WILL PLAY THE MOVE: 1/6 2L
+EXPECTED UTILITY: -212
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * b * | * b * |
+	| * w b | b w w |
+	| w w w | b w b |
+	+-------+-------+
+	| b w * | * w * |
+	| w b b | b b w |
+	| w * b | * b * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 4/1 2R
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * b * | b b * |
+	| * w b | w w b |
+	| w w w | b w * |
+	+-------+-------+
+	| b w * | w w * |
+	| w b b | b b w |
+	| w * b | * b * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 10170
+THE AI WILL PLAY THE MOVE: 3/8 3R
+EXPECTED UTILITY: -99996
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * b * | b b * |
+	| * w b | w w b |
+	| w w w | b w * |
+	+-------+-------+
+	| w w b | w w * |
+	| b b w | b b w |
+	| b b * | * b * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 4/7 3R
+
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * b * | b b * |
+	| * w b | w w b |
+	| w w w | b w * |
+	+-------+-------+
+	| b b w | w w * |
+	| b b w | b b w |
+	| * w b | w b * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 5456
+THE AI WILL PLAY THE MOVE: 1/3 3L
+EXPECTED UTILITY: 32
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| * b b | b b * |
+	| * w b | w w b |
+	| w w w | b w * |
+	+-------+-------+
+	| w w b | w w * |
+	| b b w | b b w |
+	| b b * | w b * |
+	+-------+-------+
+
+Current Turn: WHITE (HUMAN)
+
+Please enter your move in the form of "block/position block#Rotation"
+Enter your move here: 1/1 2R
+
+
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| w b b | b w b |
+	| * w b | w w b |
+	| w w w | * b * |
+	+-------+-------+
+	| w w b | w w * |
+	| b b w | b b w |
+	| b b * | w b * |
+	+-------+-------+
+
+Current Turn: BLACK (AI)
+
+BUILDING GAMETREE.
+NODES EXPANDED: 3256
+THE AI WILL PLAY THE MOVE: 2/9 2L
+EXPECTED UTILITY: 165536
+
+CURRENT BOARDSTATE:
+
+	+-------+-------+
+	| w b b | b b b |
+	| * w b | w w b |
+	| w w w | b w * |
+	+-------+-------+
+	| w w b | w w * |
+	| b b w | b b w |
+	| b b * | w b * |
+	+-------+-------+
+
+Black won!
+
