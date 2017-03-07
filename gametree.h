@@ -22,7 +22,9 @@ void            destroy_gt(gt_node* root);
 char*            build_gt_minimax();
 // Builds a gametree using alpha-beta pruning.
 char*           build_gt_abpruning();
-
+/**
+ Determines if node has the GameState
+ */
 int             contains_state(gt_node* node, GameState* gs);
 /* Reorganizes this tree to have the gt_node with the specified GameState as the 
  * root node.

@@ -94,7 +94,6 @@ char* build_gt_abpruning() {
     int beta = INF;
     // Builds the tree and does minimax at the same time.
 	__build_gt_ab(ROOT, 1, alpha, beta);
-	printf("Done with tree building. Children: %d", ROOT->children->size);
 	// Finds the optimal move.
 	int target = ROOT->utility;
 	ll_node_t* curr = ROOT->children->head;
@@ -203,7 +202,7 @@ int __build_gt_ab(gt_node* root, int depth, int alpha, int beta) {
                     // We need to link the child to its parent and vice versa if
                     // the move got applied. Then we need to recurse.
                     // This is also where we perform Alpha-Beta Pruning.
-                    if((myAlpha < myBeta) 
+                    if((myAlpha < myBeta)
                     && parse_move(child->state, child->move)
                     && !contains_state(root, child->state)) 
                     {

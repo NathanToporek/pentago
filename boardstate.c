@@ -163,6 +163,7 @@ int parse_move(GameState* gs, char* move) {
     
     if(pos == NULL || rot == NULL) {
         printf("u did a bad. pls gib valid mov. \n");
+        free(cpy);
         return FALSE;
     }
     int block, slot, rotblock;
@@ -173,23 +174,27 @@ int parse_move(GameState* gs, char* move) {
     // If any of these are bad, tell the user to hecc off with their crap.
     if(block > BLOCKS || block < 1 || slot > POSITIONS || slot < 1 || rotblock > BLOCKS || rotblock < 1) {
         printf("pls stp been redarted. gib valld mov pls.\n");
+        free(cpy);
         return FALSE;
     }
     // Gets the direction the user wants to rotate the board.
     char direction = rot[1];
     if(direction != 'R' && direction != 'L') {
         printf("You are the reason I have to write this extra code. Stop existing, please.\n");
+        free(cpy);
         return FALSE;
     }
     // Check if the move is valid.
     char piece = get_piece(gs, block, slot);
     // If the place on the board is taken, exit.
     if(piece == BLACK || piece == WHITE) {
+        free(cpy);
         return FALSE;
     }
     // ACTUALLY APPLY THE MOVE.    
     apply_move(gs, block, slot);
     if(hasanyonewonyet(gs)) {
+        free(cpy);
         return TRUE; // Exit TRUE, if someone's won. As the game/move has completed.
     }
     apply_rotation(gs, rotblock, direction);
@@ -548,7 +553,7 @@ int equals(GameState* gs, GameState* other) {
           && (gs->currTurn == other->currTurn)
           && (gs->myTurn == other->myTurn);
     for(int y = 0; y < BOARD_SIZE && equal; y++) {
-        for(int x = 0; x < BOARD_SIZE; x++) {
+        for(int x = 0; x < BOARD_SIZE && equal; x++) {
             equal &= (gs->state[y][x] == other->state[y][x]);
         }
     }

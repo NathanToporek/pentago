@@ -22,8 +22,7 @@ int main(int argc, char** argv) {
         exit(MEME_OVERLOAD);
     }
     do {
-        // Build our AI's gametree.
-        printf("BUILDING GAMETREE.\n\n");
+        // Initialize a root node.
         root = init_root(gs);
         // Print Turn info.
         print_state(gs);
@@ -36,11 +35,13 @@ int main(int argc, char** argv) {
         
         char* turn = NULL;
         
-        if(gs->currTurn != gs->myTurn) {
+        if(gs->currTurn != gs->myTurn) { // Human player.
             turn = get_turn();
             // Hopefully clear the screen. :D
 	        puts("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-        } else if(gs->currTurn == gs->myTurn) {
+        } else if(gs->currTurn == gs->myTurn) { // AI player.
+            // Build our AI's gametree.
+            printf("BUILDING GAMETREE.\n\n");
             turn = malloc(MOVE_LEN * sizeof(char));
             memcpy(turn, build_gt_abpruning(), MOVE_LEN);
             // Hopefully clear the screen. :D
