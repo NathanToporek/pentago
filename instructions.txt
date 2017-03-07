@@ -1,3 +1,9 @@
+/* Nathanael Toporek
+ * 3/7/15 TCSS 435
+ * Programming Assignment #2
+ * Instructions.txt
+ */
+
 Compilation Instructions:
 
 * There is a makefile in the directory src/
@@ -8,6 +14,13 @@ Compilation Instructions:
 3) The program should build just fine.
 
 Game-Play Instructions:
+
+NOTE: This game will usually take up ~1GB of RAM if you're using Alpha Beta pruning, 
+      and about 2-4 GB of RAM if you're just doing plain minimax.
+
+ALSO NOTE: If you want to change the depth for the gametree, edit MAX_DEPTH_MINIMAX to
+           affect Minimax's depth, or MAX_DEPTH_ABP to affect Alpha-Beta Pruning's depth.
+           Then recompile.
 
 1) Start the program in linux by issuing the command "./exe.exe"
 2) Select how you would like the AI to build its gametree
